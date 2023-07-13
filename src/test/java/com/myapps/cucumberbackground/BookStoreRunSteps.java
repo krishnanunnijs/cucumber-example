@@ -12,8 +12,7 @@ import io.cucumber.java.en.When;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class BookStoreRunSteps {
@@ -62,6 +61,6 @@ public class BookStoreRunSteps {
 
     @Then("^I find no book$")
     public void findNoBook() {
-        assertNotNull(foundBook);
+        assertNull(foundBook);
     }
 }
