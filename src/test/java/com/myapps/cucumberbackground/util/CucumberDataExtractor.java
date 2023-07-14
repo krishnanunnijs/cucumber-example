@@ -15,23 +15,11 @@ public class CucumberDataExtractor {
     public static List<List<String>> extractDatatableArguments(Scenario scenario){
         List<List<String>> args = null;
         try {
-            Field delegate = scenario.getClass()
-                    .getDeclaredField("delegate");
-            delegate.setAccessible(true);
-            TestCaseState testCaseState = (TestCaseState) delegate.get(scenario);
-
-            Field testCaseField = testCaseState.getClass()
-                    .getDeclaredField("testCase");
-            testCaseField.setAccessible(true);
-            TestCase testCase = (TestCase) testCaseField.get(testCaseState);
-            Field testStepsField = testCase.getClass()
-                    .getDeclaredField("testSteps");
-            testStepsField.setAccessible(true);
-            List<TestStep> testSteps = (List<TestStep>) testStepsField.get(testCase);
-            TestStep testStep = testSteps.get(0);
-            Field testStepField = testStep.getClass().getDeclaredField("step");
-            testStepField.setAccessible(true);
-            Step step = (Step)testStepField.get(testStep);
+            TestCaseState testCaseState = (TestCaseState)extractField(scenario,"delegate");
+            TestCase testCase = (TestCase)extractField(testCaseState,"testCase");
+            List<TestStep> testSteps = (List<TestStep>) extractField(testCase,"testSteps");
+            //since we are fetching data from first Given phrase
+            Step step = (Step)extractField(testSteps.get(0),"step");
             DataTableArgument dataTableArgument = (DataTableArgument) step.getArgument();
             final List<List<String>> cells = dataTableArgument.cells();
             System.out.println("** Datatable Arguments **");
@@ -44,6 +32,13 @@ public class CucumberDataExtractor {
             throw new RuntimeException(e);
         }
         return args;
+    }
+
+    private static <T> Object extractField(T t,String fieldName) throws NoSuchFieldException, IllegalAccessException {
+        Field field = t.getClass()
+                .getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return field.get(t);
     }
 
 }
